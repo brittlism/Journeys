@@ -52,24 +52,18 @@ namespace Microsoft.CodeAnalysis.CSharp
 
         private CSDiagnosticInfo GetUnsafeDiagnosticInfo(TypeSymbol sizeOfTypeOpt)
         {
-            if (this.Flags.Includes(BinderFlags.SuppressUnsafeDiagnostics))
+            if (!this.Flags.Includes(BinderFlags.SuppressUnsafeDiagnostics))
             {
-                return null;
+                if (!this.InUnsafeRegion && sizeOfTypeOpt is not null)
+                {
+                    return new CSDiagnosticInfo(ErrorCode.ERR_SizeofUnsafe, sizeOfTypeOpt);
+                }
+                else if (this.IsIndirectlyInIterator && MessageID.IDS_FeatureRefUnsafeInIteratorAsync.GetFeatureAvailabilityDiagnosticInfo(Compilation) is { } unsafeInIteratorDiagnosticInfo)
+                {
+                    return unsafeInIteratorDiagnosticInfo;
+                }
             }
-            else if (!this.InUnsafeRegion)
-            {
-                return ((object)sizeOfTypeOpt == null)
-                    ? new CSDiagnosticInfo(ErrorCode.ERR_UnsafeNeeded)
-                    : new CSDiagnosticInfo(ErrorCode.ERR_SizeofUnsafe, sizeOfTypeOpt);
-            }
-            else if (this.IsIndirectlyInIterator && MessageID.IDS_FeatureRefUnsafeInIteratorAsync.GetFeatureAvailabilityDiagnosticInfo(Compilation) is { } unsafeInIteratorDiagnosticInfo)
-            {
-                return unsafeInIteratorDiagnosticInfo;
-            }
-            else
-            {
-                return null;
-            }
+            return null;
         }
     }
 }
