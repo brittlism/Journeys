@@ -8227,7 +8227,7 @@ To remove the warning, you can use /reference instead (set the Embed Interop Typ
   <data name="ERR_NoStaticMixins" xml:space="preserve">
     <value>Mixin flag must not be used on a static member.</value>
   </data>
-  <data name="ERR_MixinsMustNotBeCovariant" xml:space="preserve">
-    <value>Multiple mixins must not be covariant or of the same type. (Check inheritance hierarchy, member clashing is not supported yet.)</value>
+  <data name="ERR_MustResolveMixin" xml:space="preserve">
+    <value>Declaring type must resolve mixin conflicts before ability of invocation of this method. Must be explicitly qualified. For now, you can do {0}.{1}.{2} to qualify method call instead of implementing the method in the containing type.</value>
   </data>
 </root>
