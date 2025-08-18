@@ -1557,6 +1557,11 @@
         <target state="translated">パターンがありません</target>
         <note />
       </trans-unit>
+      <trans-unit id="ERR_MixinsMustNotBeCovariant">
+        <source>Multiple mixins must not be covariant or of the same type. (Check inheritance hierarchy, member clashing is not supported yet.)</source>
+        <target state="new">Multiple mixins must not be covariant or of the same type. (Check inheritance hierarchy, member clashing is not supported yet.)</target>
+        <note />
+      </trans-unit>
       <trans-unit id="ERR_ModifierOnUnnamedReceiverParameter">
         <source>Cannot use modifiers on the unnamed receiver parameter of extension block</source>
         <target state="new">Cannot use modifiers on the unnamed receiver parameter of extension block</target>
@@ -1675,6 +1680,11 @@
       <trans-unit id="ERR_NoOutputDirectory">
         <source>Output directory could not be determined</source>
         <target state="translated">出力ディレクトリを特定できませんでした</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ERR_NoStaticMixins">
+        <source>Mixin flag must not be used on a static member.</source>
+        <target state="new">Mixin flag must not be used on a static member.</target>
         <note />
       </trans-unit>
       <trans-unit id="ERR_NonPrivateAPIInRecord">
