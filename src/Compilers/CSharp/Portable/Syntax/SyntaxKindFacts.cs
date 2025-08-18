@@ -10,7 +10,7 @@ namespace Microsoft.CodeAnalysis.CSharp
 {
     public static partial class SyntaxFacts
     {
-        private const SyntaxKind LastKeyword = SyntaxKind.ImplicitKeyword;
+        private const SyntaxKind LastKeyword = SyntaxKind.MixinKeyword;
 
         public static bool IsKeywordKind(SyntaxKind kind)
         {
@@ -1039,6 +1039,10 @@ namespace Microsoft.CodeAnalysis.CSharp
                     return SyntaxKind.ImplicitKeyword;
                 case "explicit":
                     return SyntaxKind.ExplicitKeyword;
+
+                case "mixin":
+                    return SyntaxKind.MixinKeyword;
+
                 default:
                     return SyntaxKind.None;
             }
@@ -1772,6 +1776,9 @@ namespace Microsoft.CodeAnalysis.CSharp
                     return "warnings";
                 case SyntaxKind.AnnotationsKeyword:
                     return "annotations";
+
+                case SyntaxKind.MixinKeyword:
+                    return "mixin";
 
                 // contextual keywords
                 case SyntaxKind.YieldKeyword:
