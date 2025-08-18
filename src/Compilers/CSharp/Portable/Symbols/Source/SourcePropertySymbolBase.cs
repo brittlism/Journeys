@@ -618,6 +618,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
 
         internal sealed override bool IsRequired => (_modifiers & DeclarationModifiers.Required) != 0;
 
+        internal sealed override bool IsMixin => (_modifiers & DeclarationModifiers.Mixin) != 0;
+
         internal bool IsNew
         {
             get { return (_modifiers & DeclarationModifiers.New) != 0; }

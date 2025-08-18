@@ -622,6 +622,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols.Metadata.PE
             }
         }
 
+        internal override bool IsMixin => false;
+
         internal sealed override bool HasUnscopedRefAttribute
         {
             get

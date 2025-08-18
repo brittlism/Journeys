@@ -70,6 +70,9 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
                 allowedModifiers &= ~reportStaticNotVirtualForModifiers;
             }
 
+            if ((modifiers & DeclarationModifiers.Static) != 0)
+                allowedModifiers &= ~DeclarationModifiers.Mixin;
+
             DeclarationModifiers errorModifiers = modifiers & ~allowedModifiers;
             DeclarationModifiers result = modifiers & allowedModifiers;
 
@@ -350,6 +353,9 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
                     return SyntaxFacts.GetText(SyntaxKind.ScopedKeyword);
                 case DeclarationModifiers.File:
                     return SyntaxFacts.GetText(SyntaxKind.FileKeyword);
+
+                case DeclarationModifiers.Mixin:
+                    return SyntaxFacts.GetText(SyntaxKind.MixinKeyword);
                 default:
                     throw ExceptionUtilities.UnexpectedValue(modifier);
             }
@@ -403,6 +409,9 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
                     return DeclarationModifiers.Scoped;
                 case SyntaxKind.FileKeyword:
                     return DeclarationModifiers.File;
+
+                case SyntaxKind.MixinKeyword:
+                    return DeclarationModifiers.Mixin;
                 default:
                     throw ExceptionUtilities.UnexpectedValue(kind);
             }

@@ -169,6 +169,8 @@ namespace Microsoft.CodeAnalysis.CSharp
         /// </summary>
         public bool HasMethodBodyDependency
             => false;
+
+        public override bool IsMixin => false;
     }
 
     internal sealed class LambdaCapturedVariableForRegularParameter : LambdaCapturedVariable

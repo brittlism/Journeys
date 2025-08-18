@@ -219,6 +219,8 @@ namespace Microsoft.CodeAnalysis.CSharp.ExpressionEvaluator
             public override RefKind RefKind => RefKind.None;
 
             public override ImmutableArray<CustomModifier> RefCustomModifiers => ImmutableArray<CustomModifier>.Empty;
+
+            public override bool IsMixin => false;
         }
     }
 }

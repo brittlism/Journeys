@@ -89,6 +89,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
 
         internal override bool IsRequired => throw ExceptionUtilities.Unreachable();
 
+        internal override bool IsMixin => throw ExceptionUtilities.Unreachable();
+
         internal override ObsoleteAttributeData ObsoleteAttributeData { get { throw ExceptionUtilities.Unreachable(); } }
 
         public override AssemblySymbol ContainingAssembly { get { throw ExceptionUtilities.Unreachable(); } }

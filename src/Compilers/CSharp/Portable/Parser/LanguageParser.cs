@@ -1328,6 +1328,10 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                     return DeclarationModifiers.Async;
                 case SyntaxKind.RefKeyword:
                     return DeclarationModifiers.Ref;
+
+                case SyntaxKind.MixinKeyword:
+                    return DeclarationModifiers.Mixin;
+
                 case SyntaxKind.IdentifierToken:
                     switch (contextualKind)
                     {
@@ -2397,6 +2401,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                 case SyntaxKind.ExplicitKeyword:
                 case SyntaxKind.OpenParenToken:    //tuple
                 case SyntaxKind.RefKeyword:
+
+                case SyntaxKind.MixinKeyword:
                     return true;
 
                 default:
@@ -10818,6 +10824,8 @@ done:
                 case SyntaxKind.TryKeyword:
                 case SyntaxKind.UsingKeyword:
                 case SyntaxKind.WhileKeyword:
+
+                case SyntaxKind.MixinKeyword:
                     return true;
                 default:
                     return false;

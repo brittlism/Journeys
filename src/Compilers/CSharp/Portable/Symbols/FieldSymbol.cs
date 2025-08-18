@@ -135,6 +135,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
         /// </summary>
         public abstract bool IsConst { get; }
 
+        public abstract bool IsMixin { get; }
+
         // Gets a value indicating whether this instance is metadata constant. A constant field is considered to be 
         // metadata constant unless they are of type decimal, because decimals are not regarded as constant by the CLR.
         public bool IsMetadataConstant

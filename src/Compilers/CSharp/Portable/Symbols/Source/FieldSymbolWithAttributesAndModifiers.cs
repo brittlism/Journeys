@@ -13,7 +13,6 @@ using Microsoft.CodeAnalysis.Collections;
 using Microsoft.CodeAnalysis.CSharp.Emit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.PooledObjects;
-using Roslyn.Utilities;
 
 namespace Microsoft.CodeAnalysis.CSharp.Symbols
 {
@@ -54,6 +53,9 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
 
         public sealed override bool IsConst
             => (Modifiers & DeclarationModifiers.Const) != 0;
+
+        public sealed override bool IsMixin 
+            => (Modifiers & DeclarationModifiers.Mixin) != 0;
 
         public sealed override bool IsVolatile
             => (Modifiers & DeclarationModifiers.Volatile) != 0;

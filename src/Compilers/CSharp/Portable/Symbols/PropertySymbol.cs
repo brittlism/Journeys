@@ -188,6 +188,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
         /// </summary>
         internal abstract bool IsRequired { get; }
 
+        internal abstract bool IsMixin { get; }
+
         /// <summary>
         /// True if the property itself is excluded from code coverage instrumentation.
         /// True for source properties marked with <see cref="AttributeDescription.ExcludeFromCodeCoverageAttribute"/>.

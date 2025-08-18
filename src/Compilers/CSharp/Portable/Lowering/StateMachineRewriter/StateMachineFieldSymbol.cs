@@ -84,6 +84,8 @@ namespace Microsoft.CodeAnalysis.CSharp
         {
             get { return _isThis; }
         }
+
+        public override bool IsMixin => false;
     }
 
     internal sealed class StateMachineFieldSymbolForRegularParameter : StateMachineFieldSymbol

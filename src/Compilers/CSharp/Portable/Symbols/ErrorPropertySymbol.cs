@@ -79,6 +79,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
 
         internal override bool IsRequired => false;
 
+        internal override bool IsMixin => false;
+
         internal sealed override bool HasUnscopedRefAttribute => false;
 
         internal sealed override ObsoleteAttributeData ObsoleteAttributeData { get { return null; } }
