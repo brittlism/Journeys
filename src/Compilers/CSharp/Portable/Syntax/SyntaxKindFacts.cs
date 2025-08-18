@@ -10,6 +10,8 @@ namespace Microsoft.CodeAnalysis.CSharp
 {
     public static partial class SyntaxFacts
     {
+        private const SyntaxKind LastKeyword = SyntaxKind.ImplicitKeyword;
+
         public static bool IsKeywordKind(SyntaxKind kind)
         {
             return IsReservedKeyword(kind) || IsContextualKeyword(kind);
@@ -17,7 +19,7 @@ namespace Microsoft.CodeAnalysis.CSharp
 
         public static IEnumerable<SyntaxKind> GetReservedKeywordKinds()
         {
-            for (int i = (int)SyntaxKind.BoolKeyword; i <= (int)SyntaxKind.ImplicitKeyword; i++)
+            for (int i = (int)SyntaxKind.BoolKeyword; i <= (int)LastKeyword; i++)
             {
                 Debug.Assert(Enum.IsDefined(typeof(SyntaxKind), (SyntaxKind)i));
                 yield return (SyntaxKind)i;
@@ -39,7 +41,7 @@ namespace Microsoft.CodeAnalysis.CSharp
 
         public static bool IsReservedKeyword(SyntaxKind kind)
         {
-            return kind >= SyntaxKind.BoolKeyword && kind <= SyntaxKind.ImplicitKeyword;
+            return kind >= SyntaxKind.BoolKeyword && kind <= LastKeyword;
         }
 
         public static bool IsAttributeTargetSpecifier(SyntaxKind kind)
