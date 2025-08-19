@@ -1769,8 +1769,7 @@ namespace Microsoft.CodeAnalysis.CSharp
                 if (symbol.ContainingSymbol is NamedTypeSymbol { OriginalDefinition: var symbolContainerDefinition } &&
                     ContainingType is SourceMemberContainerTypeSymbol { IsRecord: false, IsRecordStruct: false, PrimaryConstructor: SynthesizedPrimaryConstructor { ParameterCount: not 0 } primaryConstructor, OriginalDefinition: var containingTypeDefinition } &&
                     this.ContainingMember() is { Kind: not SymbolKind.NamedType, IsStatic: false } && // We are in an instance member
-                    primaryConstructor.Parameters.Any(static (p, name) => p.Name == name, name) &&
-                    // And not shadowed by a member in the same type
+                    primaryConstructor.Parameters.Any(static (p, name) => p.Name == name, name) && // And not shadowed by a member in the same type
                     symbolContainerDefinition != (object)containingTypeDefinition &&
                     !members.Any(static (m, containingTypeDefinition) => m.ContainingSymbol.OriginalDefinition == (object)containingTypeDefinition, containingTypeDefinition))
                 {
@@ -2367,9 +2366,7 @@ namespace Microsoft.CodeAnalysis.CSharp
 
         private BoundExpression TryBindInteractiveReceiver(SyntaxNode syntax, NamedTypeSymbol memberDeclaringType)
         {
-            if (this.ContainingType.TypeKind == TypeKind.Submission
-                // check we have access to `this`
-                && isInstanceContext())
+            if (this.ContainingType.TypeKind == TypeKind.Submission /* check we have access to `this` */ && isInstanceContext())
             {
                 if (memberDeclaringType.TypeKind == TypeKind.Submission)
                 {
@@ -3936,8 +3933,7 @@ namespace Microsoft.CodeAnalysis.CSharp
                 {
                     if (!this.CheckValueKind(argument.Syntax, argument, BindValueKind.RefersToLocation, checkingReceiver: false, BindingDiagnosticBag.Discarded))
                     {
-                        Debug.Assert(argNumber >= 0); // can be 0 for receiver of extension method
-                                                      // Argument {0} should be a variable because it is passed to a 'ref readonly' parameter
+                        Debug.Assert(argNumber >= 0); // can be 0 for receiver of extension method Argument {0} should be a variable because it is passed to a 'ref readonly' parameter
                         diagnostics.Add(
                             ErrorCode.WRN_RefReadonlyNotVariable,
                             argument.Syntax,
@@ -8175,13 +8171,34 @@ namespace Microsoft.CodeAnalysis.CSharp
             }
 
             this.LookupMembersWithFallback(lookupResult, leftType, rightName, rightArity, ref useSiteInfo, basesBeingResolved: null, options: options);
+            if (invoked && lookupResult.IsClear && leftType is NamedTypeSymbol)
+            {
+                var uniqueMethods = ArrayBuilder<MethodSymbol>.GetInstance();
+                var seen = new HashSet<MethodSymbol>(MemberSignatureComparer.DuplicateSourceComparer);
+
+                foreach (var member in leftType.GetMembers())
+                {
+                    NamedTypeSymbol type;
+                    if (member.IsStatic)
+                        continue;
+                    else if (member is FieldSymbol { IsMixin: true, Type: NamedTypeSymbol { Kind: not SymbolKind.ErrorType } fieldType })
+                        type = fieldType;
+                    else if (member is PropertySymbol { IsMixin: true, Type: NamedTypeSymbol { Kind: not SymbolKind.ErrorType } propertyType })
+                        type = propertyType;
+                    else continue;
+                    for (var super = type; super is not null and not ErrorTypeSymbol; super = super.BaseTypeNoUseSiteDiagnostics)
+                        foreach (var method in super.GetMembers())
+                            if (method is MethodSymbol methodSymbol && seen.Add(methodSymbol))
+                                uniqueMethods.Add(methodSymbol);
+                }
+            }
         }
 
-        private void BindMemberAccessReportError(BoundMethodGroup node, BindingDiagnosticBag diagnostics)
+        private void BindMemberAccessReportError(BoundMethodGroup node, BindingDiagnosticBag diagnostics, out bool noSuchExtension)
         {
             var nameSyntax = node.NameSyntax;
             var syntax = node.MemberAccessExpressionSyntax ?? nameSyntax;
-            this.BindMemberAccessReportError(syntax, nameSyntax, node.Name, node.ReceiverOpt, node.LookupError, diagnostics);
+            this.BindMemberAccessReportError(syntax, nameSyntax, node.Name, node.ReceiverOpt, node.LookupError, diagnostics, out noSuchExtension);
         }
 
         /// <summary>
@@ -8196,6 +8213,23 @@ namespace Microsoft.CodeAnalysis.CSharp
             DiagnosticInfo lookupError,
             BindingDiagnosticBag diagnostics)
         {
+            BindMemberAccessReportError(node, name, plainName, boundLeft, lookupError, diagnostics, out _);
+        }
+
+        /// <summary>
+        /// Report the error from member access lookup. Or, if there
+        /// was no explicit error from lookup, report "no such member".
+        /// </summary>
+        private void BindMemberAccessReportError(
+            SyntaxNode node,
+            SyntaxNode name,
+            string plainName,
+            BoundExpression boundLeft,
+            DiagnosticInfo lookupError,
+            BindingDiagnosticBag diagnostics,
+            out bool noSuchExtension)
+        {
+            noSuchExtension = false;
             if (boundLeft.HasAnyErrors && boundLeft.Kind != BoundKind.TypeOrValueExpression)
             {
                 return;
@@ -8230,6 +8264,7 @@ namespace Microsoft.CodeAnalysis.CSharp
                 }
                 else
                 {
+                    noSuchExtension = true;
                     Error(diagnostics, ErrorCode.ERR_NoSuchMemberOrExtension, name, boundLeft.Type, plainName);
                 }
             }
@@ -10612,6 +10647,24 @@ namespace Microsoft.CodeAnalysis.CSharp
             TypeSymbol returnType = null,
             in CallingConventionInfo callingConventionInfo = default)
         {
+            return ResolveMethodGroup(node, expression, memberName, analyzedArguments, ref useSiteInfo, options, acceptOnlyMethods,
+                out _, returnRefKind, returnType, callingConventionInfo);
+        }
+
+        internal MethodGroupResolution ResolveMethodGroup(
+            BoundMethodGroup node,
+            SyntaxNode expression,
+            string memberName,
+            AnalyzedArguments analyzedArguments,
+            ref CompoundUseSiteInfo<AssemblySymbol> useSiteInfo,
+            OverloadResolution.Options options,
+            bool acceptOnlyMethods,
+            out bool noSuchExtension,
+            RefKind returnRefKind = default,
+            TypeSymbol returnType = null,
+            in CallingConventionInfo callingConventionInfo = default)
+        {
+            noSuchExtension = false;
             var methodResolution = ResolveMethodGroupInternal(
                 node, expression, memberName, analyzedArguments, ref useSiteInfo,
                 options,
@@ -10624,7 +10677,7 @@ namespace Microsoft.CodeAnalysis.CSharp
 
                 var diagnostics = BindingDiagnosticBag.GetInstance(withDiagnostics: true, useSiteInfo.AccumulatesDependencies);
                 diagnostics.AddRange(methodResolution.Diagnostics); // Could still have use site warnings.
-                BindMemberAccessReportError(node, diagnostics);
+                BindMemberAccessReportError(node, diagnostics, out noSuchExtension);
 
                 // Note: no need to free `methodResolution`, we're transferring the pooled objects it owned
                 return new MethodGroupResolution(methodResolution.MethodGroup, methodResolution.OtherSymbol, methodResolution.OverloadResolutionResult, methodResolution.AnalyzedArguments, methodResolution.ResultKind, diagnostics.ToReadOnlyAndFree());

@@ -23,19 +23,13 @@ namespace Microsoft.CodeAnalysis.CSharp
     {
         private BoundExpression BindMethodGroup(ExpressionSyntax node, bool invoked, bool indexed, BindingDiagnosticBag diagnostics)
         {
-            switch (node.Kind())
+            return node.Kind() switch
             {
-                case SyntaxKind.IdentifierName:
-                case SyntaxKind.GenericName:
-                    return BindIdentifier((SimpleNameSyntax)node, invoked, indexed, diagnostics);
-                case SyntaxKind.SimpleMemberAccessExpression:
-                case SyntaxKind.PointerMemberAccessExpression:
-                    return BindMemberAccess((MemberAccessExpressionSyntax)node, invoked, indexed, diagnostics);
-                case SyntaxKind.ParenthesizedExpression:
-                    return BindMethodGroup(((ParenthesizedExpressionSyntax)node).Expression, invoked: false, indexed: false, diagnostics: diagnostics);
-                default:
-                    return BindExpression(node, diagnostics, invoked, indexed);
-            }
+                SyntaxKind.IdentifierName or SyntaxKind.GenericName => BindIdentifier((SimpleNameSyntax)node, invoked, indexed, diagnostics),
+                SyntaxKind.SimpleMemberAccessExpression or SyntaxKind.PointerMemberAccessExpression => BindMemberAccess((MemberAccessExpressionSyntax)node, invoked, indexed, diagnostics),
+                SyntaxKind.ParenthesizedExpression => BindMethodGroup(((ParenthesizedExpressionSyntax)node).Expression, invoked: false, indexed: false, diagnostics: diagnostics),
+                _ => BindExpression(node, diagnostics, invoked, indexed),
+            };
         }
 
         private static ImmutableArray<MethodSymbol> GetOriginalMethods(OverloadResolutionResult<MethodSymbol> overloadResolutionResult)
@@ -183,8 +177,7 @@ namespace Microsoft.CodeAnalysis.CSharp
             InvocationExpressionSyntax node,
             BindingDiagnosticBag diagnostics)
         {
-            BoundExpression result;
-            if (TryBindNameofOperator(node, diagnostics, out result))
+            if (TryBindNameofOperator(node, diagnostics, out BoundExpression result))
             {
                 return result; // all of the binding is done by BindNameofOperator
             }
@@ -214,7 +207,7 @@ namespace Microsoft.CodeAnalysis.CSharp
 
                 while (true)
                 {
-                    result = bindArgumentsAndInvocation(node, boundExpression, analyzedArguments, diagnostics);
+                    result = bindArgumentsAndInvocation(node, boundExpression, analyzedArguments, diagnostics, out _);
                     nested = node;
 
                     if (!invocations.TryPop(out node))
@@ -234,18 +227,18 @@ namespace Microsoft.CodeAnalysis.CSharp
             else
             {
                 BoundExpression boundExpression = BindMethodGroup(node.Expression, invoked: true, indexed: false, diagnostics: diagnostics);
-                result = bindArgumentsAndInvocation(node, boundExpression, analyzedArguments, diagnostics);
+                result = bindArgumentsAndInvocation(node, boundExpression, analyzedArguments, diagnostics, out bool hasNoSuchMethodOrExtensionError);
             }
 
             analyzedArguments.Free();
             return result;
 
-            BoundExpression bindArgumentsAndInvocation(InvocationExpressionSyntax node, BoundExpression boundExpression, AnalyzedArguments analyzedArguments, BindingDiagnosticBag diagnostics)
+            BoundExpression bindArgumentsAndInvocation(InvocationExpressionSyntax node, BoundExpression boundExpression, AnalyzedArguments analyzedArguments, BindingDiagnosticBag diagnostics, out bool noSuchExtension)
             {
                 boundExpression = CheckValue(boundExpression, BindValueKind.RValueOrMethodGroup, diagnostics);
                 string name = boundExpression.Kind == BoundKind.MethodGroup ? GetName(node.Expression) : null;
                 BindArgumentsAndNames(node.ArgumentList, diagnostics, analyzedArguments, allowArglist: true);
-                return BindInvocationExpression(node, node.Expression, name, boundExpression, analyzedArguments, diagnostics, acceptOnlyMethods: false);
+                return BindInvocationExpression(node, node.Expression, name, boundExpression, analyzedArguments, diagnostics, acceptOnlyMethods: false, noSuchExtension: out noSuchExtension);
             }
 
             static bool receiverIsInvocation(InvocationExpressionSyntax node, out InvocationExpressionSyntax nested)
@@ -329,6 +322,26 @@ namespace Microsoft.CodeAnalysis.CSharp
             bool ignoreNormalFormIfHasValidParamsParameter = false,
             bool disallowExpandedNonArrayParams = false)
         {
+            return BindInvocationExpression(node, expression, methodName, boundExpression, analyzedArguments, diagnostics, acceptOnlyMethods,
+                out _, queryClause, ignoreNormalFormIfHasValidParamsParameter, disallowExpandedNonArrayParams);
+        }
+
+        /// <summary>
+        /// Bind an expression as a method invocation.
+        /// </summary>
+        private BoundExpression BindInvocationExpression(
+            SyntaxNode node,
+            SyntaxNode expression,
+            string methodName,
+            BoundExpression boundExpression,
+            AnalyzedArguments analyzedArguments,
+            BindingDiagnosticBag diagnostics,
+            bool acceptOnlyMethods,
+            out bool noSuchExtension,
+            CSharpSyntaxNode queryClause = null,
+            bool ignoreNormalFormIfHasValidParamsParameter = false,
+            bool disallowExpandedNonArrayParams = false)
+        {
             //
             // !!! ATTENTION !!!
             //
@@ -339,7 +352,7 @@ namespace Microsoft.CodeAnalysis.CSharp
 
             BoundExpression result;
             NamedTypeSymbol delegateType;
-
+            noSuchExtension = false;
             if ((object)boundExpression.Type != null && boundExpression.Type.IsDynamic())
             {
                 // Either we have a dynamic method group invocation "dyn.M(...)" or 
@@ -357,7 +370,7 @@ namespace Microsoft.CodeAnalysis.CSharp
                     ignoreNormalFormIfHasValidParamsParameter: ignoreNormalFormIfHasValidParamsParameter,
                     disallowExpandedNonArrayParams: disallowExpandedNonArrayParams,
                     anyApplicableCandidates: out _,
-                    acceptOnlyMethods: acceptOnlyMethods);
+                    acceptOnlyMethods: acceptOnlyMethods, noSuchExtension: out noSuchExtension);
             }
             else if ((object)(delegateType = GetDelegateType(boundExpression)) != null)
             {
@@ -701,6 +714,24 @@ namespace Microsoft.CodeAnalysis.CSharp
             bool disallowExpandedNonArrayParams,
             bool acceptOnlyMethods) // For example, do not accept extension property value invocations (delegates returned by a property can be invoked, etc.)
         {
+            return BindMethodGroupInvocation(syntax, expression, methodName, methodGroup, analyzedArguments, diagnostics, queryClause,
+                ignoreNormalFormIfHasValidParamsParameter, out anyApplicableCandidates, disallowExpandedNonArrayParams, acceptOnlyMethods, out _);
+        }
+
+        private BoundExpression BindMethodGroupInvocation(
+            SyntaxNode syntax,
+            SyntaxNode expression,
+            string methodName,
+            BoundMethodGroup methodGroup,
+            AnalyzedArguments analyzedArguments,
+            BindingDiagnosticBag diagnostics,
+            CSharpSyntaxNode queryClause,
+            bool ignoreNormalFormIfHasValidParamsParameter,
+            out bool anyApplicableCandidates,
+            bool disallowExpandedNonArrayParams,
+            bool acceptOnlyMethods,
+            out bool noSuchExtension) // For example, do not accept extension property value invocations (delegates returned by a property can be invoked, etc.)
+        {
             //
             // !!! ATTENTION !!!
             //
@@ -717,7 +748,7 @@ namespace Microsoft.CodeAnalysis.CSharp
                 options: (ignoreNormalFormIfHasValidParamsParameter ? OverloadResolution.Options.IgnoreNormalFormIfHasValidParamsParameter : OverloadResolution.Options.None) |
                          (disallowExpandedNonArrayParams ? OverloadResolution.Options.DisallowExpandedNonArrayParams : OverloadResolution.Options.None) |
                          (analyzedArguments.HasDynamicArgument ? OverloadResolution.Options.DynamicResolution : OverloadResolution.Options.None),
-                acceptOnlyMethods: acceptOnlyMethods);
+                acceptOnlyMethods: acceptOnlyMethods, noSuchExtension: out noSuchExtension);
             diagnostics.Add(expression, useSiteInfo);
 
             if (resolution.IsNonMethodExtensionMember(out Symbol extensionMember))
