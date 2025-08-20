@@ -1505,50 +1505,31 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
 
         public override ImmutableArray<Symbol> GetMembers()
         {
-            ImmutableArray<Symbol> members;
             if (_flags.FlattenedMembersIsSorted)
             {
-                members = _lazyMembersFlattened;
+                return _lazyMembersFlattened;
             }
             else
             {
-                members = this.GetMembersUnordered();
+                var allMembers = this.GetMembersUnordered();
 
-                if (members.Length > 1)
+                if (allMembers.Length > 1)
                 {
                     // The array isn't sorted. Sort it and remember that we sorted it.
-                    members = members.Sort(LexicalOrderSymbolComparer.Instance);
-                    ImmutableInterlocked.InterlockedExchange(ref _lazyMembersFlattened, members);
+                    allMembers = allMembers.Sort(LexicalOrderSymbolComparer.Instance);
+                    ImmutableInterlocked.InterlockedExchange(ref _lazyMembersFlattened, allMembers);
                 }
 
                 _flags.SetFlattenedMembersIsSorted();
+                return allMembers;
             }
-
-            var uniqueMethods = new ArrayBuilder<Symbol>();
-            foreach ((Symbol member, NamedTypeSymbol type) in this.GetMixinMembers(members))
-            {
-                for (var super = type; super is not null and not ErrorTypeSymbol; super = super.BaseTypeNoUseSiteDiagnostics)
-                    foreach (var symbol in super.GetMembers())
-                    {
-                        if (!members.Any(element => MemberSignatureComparer.DuplicateSourceComparer.Equals(symbol, element)))
-                            uniqueMethods.Add(symbol);
-                    }
-            }
-            uniqueMethods.AddRange(members);
-            return uniqueMethods.ToImmutableAndFree();
         }
 
         public sealed override ImmutableArray<Symbol> GetMembers(string name)
         {
             if (GetMembersByName().TryGetValue(name.AsMemory(), out ImmutableArray<Symbol> members))
                 return members;
-            ArrayBuilder<Symbol> nameMatches = new();
-            foreach (var symbol in this.GetMembers())
-            {
-                if (symbol.Name == name)
-                    nameMatches.Add(symbol);
-            }
-            return nameMatches.ToImmutableAndFree();
+            return ImmutableArray<Symbol>.Empty;
         }
 
         /// <remarks>
@@ -3152,6 +3133,20 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
                 // Merge types into the member dictionary
                 AddNestedTypesToDictionary(membersByName, GetTypeMembersDictionary());
             }
+
+            var flattenedMembers = membersByName.Flatten(null);
+            var uniqueMethods = new ArrayBuilder<Symbol>();
+            foreach ((Symbol member, NamedTypeSymbol type) in this.GetMixinMembers(flattenedMembers))
+            {
+                for (var super = type; super is not null and not ErrorTypeSymbol; super = super.BaseTypeNoUseSiteDiagnostics)
+                    foreach (var symbol in super.GetMembers())
+                    {
+                        if (!flattenedMembers.Any(element => MemberSignatureComparer.DuplicateSourceComparer.Equals(symbol, element)))
+                            uniqueMethods.Add(symbol);
+                    }
+            }
+            uniqueMethods.AddRange(flattenedMembers);
+            membersByName = ToNameKeyedDictionary(uniqueMethods.ToImmutableAndFree());
 
             return membersByName;
         }
