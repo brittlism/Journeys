@@ -3141,10 +3141,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
                 for (var super = type; super is not null and not ErrorTypeSymbol; super = super.BaseTypeNoUseSiteDiagnostics)
                     foreach (var symbol in super.GetMembers())
                     {
-                        if (symbol is not MethodSymbol methodSymbol)
-                            continue;
                         if (!flattenedMembers.Any(element => MemberSignatureComparer.DuplicateSourceComparer.Equals(symbol, element)))
-                            uniqueMethods.Add(methodSymbol);
+                            uniqueMethods.Add(symbol);
                     }
             }
             uniqueMethods.AddRange(flattenedMembers);
