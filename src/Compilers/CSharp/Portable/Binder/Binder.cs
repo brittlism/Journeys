@@ -259,7 +259,8 @@ namespace Microsoft.CodeAnalysis.CSharp
                 Syntax.NullableContextState.State.Enabled => true,
                 Syntax.NullableContextState.State.Disabled => false,
                 Syntax.NullableContextState.State.ExplicitlyRestored => GetGlobalAnnotationState(),
-                Syntax.NullableContextState.State.Unknown => // IsGeneratedCode may be slow, check global state first:
+                Syntax.NullableContextState.State.Unknown =>
+                    // IsGeneratedCode may be slow, check global state first:
                     AreNullableAnnotationsGloballyEnabled() &&
                     !csTree.IsGeneratedCode(this.Compilation.Options.SyntaxTreeOptionsProvider, CancellationToken.None),
                 _ => throw ExceptionUtilities.UnexpectedValue(context.AnnotationsState)
