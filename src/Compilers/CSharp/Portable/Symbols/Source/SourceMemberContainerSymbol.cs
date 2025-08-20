@@ -3145,35 +3145,10 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
                             uniqueMethods.Add(symbol);
                     }
             }
-            var secondMembers = ToNameKeyedDictionary(uniqueMethods.ToImmutableAndFree());
-            var newByName = new Dictionary<ReadOnlyMemory<char>, ImmutableArray<Symbol>>();
+            uniqueMethods.AddRange(flattenedMembers);
+            membersByName = ToNameKeyedDictionary(uniqueMethods.ToImmutableAndFree());
 
-            foreach (var element in secondMembers)
-            {
-                var added = false;
-                foreach (var keyValuePair in membersByName)
-                    if (element.Key.Equals(keyValuePair.Key))
-                    {
-                        var builder = new ArrayBuilder<Symbol>();
-                        builder.AddRange(keyValuePair.Value);
-                        builder.AddRange(element.Value);
-                        newByName.Add(element.Key, builder.ToImmutableAndFree());
-                        added = true;
-                        break;
-                    }
-                if (!added)
-                    newByName.Add(element.Key, element.Value);
-            }
-
-            foreach (var keyValuePair in membersByName)
-            {
-                if (!newByName.Any(element => element.Key.Equals(keyValuePair.Key)))
-                {
-                    newByName.Add(keyValuePair.Key, keyValuePair.Value);
-                }
-            }
-
-            return newByName;
+            return membersByName;
         }
 
         private static void AddNestedTypesToDictionary(
