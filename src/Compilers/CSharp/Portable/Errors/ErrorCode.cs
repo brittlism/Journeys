@@ -256,9 +256,7 @@ namespace Microsoft.CodeAnalysis.CSharp
         ERR_GenericConstraintNotSatisfiedTyVar = 314, // Requires SymbolDistinguisher.
         ERR_GenericConstraintNotSatisfiedValType = 315, // Requires SymbolDistinguisher.
         ERR_DuplicateGeneratedName = 316,
-        ERR_NoStaticMixins = 317,
-        ERR_MixinsMustNotBeCovariant = 318,
-        // unused 319-399
+        // unused 317-399
         ERR_GlobalSingleTypeNameNotFound = 400,
         ERR_NewBoundMustBeLast = 401,
         WRN_MainCantBeGeneric = 402,

@@ -8224,10 +8224,4 @@ To remove the warning, you can use /reference instead (set the Embed Interop Typ
   <data name="ERR_ExtensionBlockCollision" xml:space="preserve">
     <value>This extension block collides with another extension block. They result in conflicting content-based type names in metadata, so must be in separate enclosing static classes.</value>
   </data>
-  <data name="ERR_NoStaticMixins" xml:space="preserve">
-    <value>Mixin flag must not be used on a static member.</value>
-  </data>
-  <data name="ERR_MixinsMustNotBeCovariant" xml:space="preserve">
-    <value>Multiple mixins must not be covariant or of the same type. (Check inheritance hierarchy, member clashing is not supported yet.)</value>
-  </data>
 </root>

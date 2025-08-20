@@ -70,8 +70,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
                 allowedModifiers &= ~reportStaticNotVirtualForModifiers;
             }
 
-            if ((modifiers & DeclarationModifiers.Static) != 0 && (modifiers & DeclarationModifiers.Mixin) != 0)
-                diagnostics.Add(ErrorCode.ERR_NoStaticMixins, errorLocation, ConvertSingleModifierToSyntaxText(DeclarationModifiers.Mixin));
+            if ((modifiers & DeclarationModifiers.Static) != 0)
+                allowedModifiers &= ~DeclarationModifiers.Mixin;
 
             DeclarationModifiers errorModifiers = modifiers & ~allowedModifiers;
             DeclarationModifiers result = modifiers & allowedModifiers;
