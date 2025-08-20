@@ -160,8 +160,6 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
             }
         }
 
-        public override bool IsMixin => _underlyingField.IsMixin;
-
         internal override ObsoleteAttributeData ObsoleteAttributeData
         {
             get

@@ -384,7 +384,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
             var defaultAccess = isInterface && !isExplicitInterfaceImplementation ? DeclarationModifiers.Public : DeclarationModifiers.Private;
 
             // Check that the set of modifiers is allowed
-            var allowedModifiers = DeclarationModifiers.Partial | DeclarationModifiers.Unsafe | DeclarationModifiers.Mixin;
+            var allowedModifiers = DeclarationModifiers.Partial | DeclarationModifiers.Unsafe;
             var defaultInterfaceImplementationModifiers = DeclarationModifiers.None;
 
             if (!isExplicitInterfaceImplementation)

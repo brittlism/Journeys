@@ -196,7 +196,5 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
         }
 
         internal override bool IsRequired => false;
-
-        public override bool IsMixin => false;
     }
 }

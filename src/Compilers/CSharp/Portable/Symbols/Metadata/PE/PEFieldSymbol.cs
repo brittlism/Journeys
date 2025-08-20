@@ -691,7 +691,5 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols.Metadata.PE
                 return hasRequiredMemberAttribute;
             }
         }
-
-        public override bool IsMixin => false;
     }
 }

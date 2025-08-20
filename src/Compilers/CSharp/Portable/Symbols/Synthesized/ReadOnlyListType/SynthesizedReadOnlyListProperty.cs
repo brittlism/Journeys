@@ -68,8 +68,6 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
 
         internal override bool IsRequired => false;
 
-        internal override bool IsMixin => false;
-
         internal override bool HasSpecialName => false;
 
         internal override Cci.CallingConvention CallingConvention => _interfaceProperty.CallingConvention;

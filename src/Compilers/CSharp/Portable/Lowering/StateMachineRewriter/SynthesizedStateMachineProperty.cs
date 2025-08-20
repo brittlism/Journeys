@@ -171,7 +171,5 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
         {
             get { return ((ISynthesizedMethodBodyImplementationSymbol)ContainingSymbol).Method; }
         }
-
-        internal override bool IsMixin => false;
     }
 }

@@ -180,8 +180,6 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
                 isInterface ? DeclarationModifiers.Public : DeclarationModifiers.Private;
 
             DeclarationModifiers allowedModifiers =
-                DeclarationModifiers.Mixin |
-
                 DeclarationModifiers.AccessibilityMask |
                 DeclarationModifiers.Const |
                 DeclarationModifiers.New |
