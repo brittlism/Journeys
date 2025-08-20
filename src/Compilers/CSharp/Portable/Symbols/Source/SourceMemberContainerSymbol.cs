@@ -1527,12 +1527,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
 
         public sealed override ImmutableArray<Symbol> GetMembers(string name)
         {
-            ImmutableArray<Symbol> members;
-            if (GetMembersByName().TryGetValue(name.AsMemory(), out members))
-            {
+            if (GetMembersByName().TryGetValue(name.AsMemory(), out ImmutableArray<Symbol> members))
                 return members;
-            }
-
             return ImmutableArray<Symbol>.Empty;
         }
 
@@ -3138,7 +3134,46 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
                 AddNestedTypesToDictionary(membersByName, GetTypeMembersDictionary());
             }
 
-            return membersByName;
+            var flattenedMembers = membersByName.Flatten(null);
+            var uniqueMethods = new ArrayBuilder<Symbol>();
+            foreach ((Symbol member, NamedTypeSymbol type) in this.GetMixinMembers(flattenedMembers))
+            {
+                for (var super = type; super is not null and not ErrorTypeSymbol; super = super.BaseTypeNoUseSiteDiagnostics)
+                    foreach (var symbol in super.GetMembers())
+                    {
+                        if (!flattenedMembers.Any(element => MemberSignatureComparer.DuplicateSourceComparer.Equals(symbol, element)))
+                            uniqueMethods.Add(symbol);
+                    }
+            }
+            var secondMembers = ToNameKeyedDictionary(uniqueMethods.ToImmutableAndFree());
+            var newByName = new Dictionary<ReadOnlyMemory<char>, ImmutableArray<Symbol>>();
+
+            foreach (var element in secondMembers)
+            {
+                var added = false;
+                foreach (var keyValuePair in membersByName)
+                    if (element.Key.Equals(keyValuePair.Key))
+                    {
+                        var builder = new ArrayBuilder<Symbol>();
+                        builder.AddRange(keyValuePair.Value);
+                        builder.AddRange(element.Value);
+                        newByName.Add(element.Key, builder.ToImmutableAndFree());
+                        added = true;
+                        break;
+                    }
+                if (!added)
+                    newByName.Add(element.Key, element.Value);
+            }
+
+            foreach (var keyValuePair in membersByName)
+            {
+                if (!newByName.Any(element => element.Key.Equals(keyValuePair.Key)))
+                {
+                    newByName.Add(keyValuePair.Key, keyValuePair.Value);
+                }
+            }
+
+            return newByName;
         }
 
         private static void AddNestedTypesToDictionary(

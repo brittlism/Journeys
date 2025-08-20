@@ -8171,27 +8171,6 @@ namespace Microsoft.CodeAnalysis.CSharp
             }
 
             this.LookupMembersWithFallback(lookupResult, leftType, rightName, rightArity, ref useSiteInfo, basesBeingResolved: null, options: options);
-            if (invoked && lookupResult.IsClear && leftType is NamedTypeSymbol)
-            {
-                var uniqueMethods = ArrayBuilder<MethodSymbol>.GetInstance();
-                var seen = new HashSet<MethodSymbol>(MemberSignatureComparer.DuplicateSourceComparer);
-
-                foreach (var member in leftType.GetMembers())
-                {
-                    NamedTypeSymbol type;
-                    if (member.IsStatic)
-                        continue;
-                    else if (member is FieldSymbol { IsMixin: true, Type: NamedTypeSymbol { Kind: not SymbolKind.ErrorType } fieldType })
-                        type = fieldType;
-                    else if (member is PropertySymbol { IsMixin: true, Type: NamedTypeSymbol { Kind: not SymbolKind.ErrorType } propertyType })
-                        type = propertyType;
-                    else continue;
-                    for (var super = type; super is not null and not ErrorTypeSymbol; super = super.BaseTypeNoUseSiteDiagnostics)
-                        foreach (var method in super.GetMembers())
-                            if (method is MethodSymbol methodSymbol && seen.Add(methodSymbol))
-                                uniqueMethods.Add(methodSymbol);
-                }
-            }
         }
 
         private void BindMemberAccessReportError(BoundMethodGroup node, BindingDiagnosticBag diagnostics, out bool noSuchExtension)
