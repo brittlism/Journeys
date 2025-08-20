@@ -1557,6 +1557,11 @@
         <target state="translated">パターンがありません</target>
         <note />
       </trans-unit>
+      <trans-unit id="ERR_MixinsMustNotBeCovariant">
+        <source>Multiple mixins must not be covariant or of the same type. (Check inheritance hierarchy, member clashing is not supported yet.)</source>
+        <target state="new">Multiple mixins must not be covariant or of the same type. (Check inheritance hierarchy, member clashing is not supported yet.)</target>
+        <note />
+      </trans-unit>
       <trans-unit id="ERR_ModifierOnUnnamedReceiverParameter">
         <source>Cannot use modifiers on the unnamed receiver parameter of extension block</source>
         <target state="new">Cannot use modifiers on the unnamed receiver parameter of extension block</target>
@@ -1605,11 +1610,6 @@
       <trans-unit id="ERR_MultipleRecordParameterLists">
         <source>Only a single partial type declaration may have a parameter list</source>
         <target state="translated">単一の部分型宣言のみがパラメーター リストを持つことができます</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="ERR_MustResolveMixin">
-        <source>Declaring type must resolve mixin conflicts before ability of invocation of this method. Must be explicitly qualified. For now, you can do {0}.{1}.{2} to qualify method call instead of implementing the method in the containing type.</source>
-        <target state="new">Declaring type must resolve mixin conflicts before ability of invocation of this method. Must be explicitly qualified. For now, you can do {0}.{1}.{2} to qualify method call instead of implementing the method in the containing type.</target>
         <note />
       </trans-unit>
       <trans-unit id="ERR_NamedArgumentForInlineArray">

@@ -70,8 +70,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
                 allowedModifiers &= ~reportStaticNotVirtualForModifiers;
             }
 
-            if ((modifiers & DeclarationModifiers.Static) != 0)
-                allowedModifiers &= ~DeclarationModifiers.Mixin;
+            if ((modifiers & DeclarationModifiers.Static) != 0 && (modifiers & DeclarationModifiers.Mixin) != 0)
+                diagnostics.Add(ErrorCode.ERR_NoStaticMixins, errorLocation, ConvertSingleModifierToSyntaxText(DeclarationModifiers.Mixin));
 
             DeclarationModifiers errorModifiers = modifiers & ~allowedModifiers;
             DeclarationModifiers result = modifiers & allowedModifiers;
@@ -85,13 +85,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
                 switch (oneError)
                 {
                     case DeclarationModifiers.Partial:
-                        ReportSpecializedError(ErrorCode.ERR_PartialMisplaced, SyntaxKind.PartialKeyword,
-                            errorLocation, diagnostics, modifierTokens);
-                        break;
-
-                    case DeclarationModifiers.Mixin:
-                        ReportSpecializedError(ErrorCode.ERR_NoStaticMixins, SyntaxKind.MixinKeyword,
-                            errorLocation, diagnostics, modifierTokens);
+                        // Provide a specialized error message in the case of partial.
+                        ReportPartialError(errorLocation, diagnostics, modifierTokens);
                         break;
 
                     case DeclarationModifiers.Abstract:
@@ -135,21 +130,20 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
             }
         }
 
-        private static void ReportSpecializedError(
-            ErrorCode errorCode, SyntaxKind keyword,
-            Location errorLocation, BindingDiagnosticBag diagnostics, SyntaxTokenList? modifierTokens)
+        private static void ReportPartialError(Location errorLocation, BindingDiagnosticBag diagnostics, SyntaxTokenList? modifierTokens)
         {
+            // If we can find the 'partial' token, report it on that.
             if (modifierTokens != null)
             {
-                var partialToken = modifierTokens.Value.FirstOrDefault(keyword);
+                var partialToken = modifierTokens.Value.FirstOrDefault(SyntaxKind.PartialKeyword);
                 if (partialToken != default)
                 {
-                    diagnostics.Add(errorCode, partialToken.GetLocation());
+                    diagnostics.Add(ErrorCode.ERR_PartialMisplaced, partialToken.GetLocation());
                     return;
                 }
             }
 
-            diagnostics.Add(errorCode, errorLocation);
+            diagnostics.Add(ErrorCode.ERR_PartialMisplaced, errorLocation);
         }
 
         internal static void ReportDefaultInterfaceImplementationModifiers(
