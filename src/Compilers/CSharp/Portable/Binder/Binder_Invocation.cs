@@ -207,7 +207,7 @@ namespace Microsoft.CodeAnalysis.CSharp
 
                 while (true)
                 {
-                    result = bindArgumentsAndInvocation(node, boundExpression, analyzedArguments, diagnostics);
+                    result = bindArgumentsAndInvocation(node, boundExpression, analyzedArguments, diagnostics, out _);
                     nested = node;
 
                     if (!invocations.TryPop(out node))
@@ -223,47 +223,22 @@ namespace Microsoft.CodeAnalysis.CSharp
                 }
 
                 invocations.Free();
-                node = nested;
             }
             else
             {
                 BoundExpression boundExpression = BindMethodGroup(node.Expression, invoked: true, indexed: false, diagnostics: diagnostics);
-                result = bindArgumentsAndInvocation(node, boundExpression, analyzedArguments, diagnostics);
-            }
-
-            if (result is BoundCall call && call.ReceiverOpt?.Type is NamedTypeSymbol recieverType)
-            {
-                var containingType = call.Method.ContainingType;
-                if (containingType.Equals(recieverType) || node.Expression is not MemberAccessExpressionSyntax syntax) { }
-                else
-                {
-                    analyzedArguments.Free();
-                    analyzedArguments = AnalyzedArguments.GetInstance();
-                    foreach ((Symbol member, NamedTypeSymbol type) in recieverType.GetMixinMembers())
-                    {
-                        if (type.Equals(containingType))
-                        {
-                            var newExpression = SyntaxFactory.MemberAccessExpression(syntax.Kind(), syntax.Expression, SyntaxFactory.IdentifierName(member.Name));
-                            newExpression = SyntaxFactory.MemberAccessExpression(syntax.Kind(), newExpression, syntax.Name);
-                            node = node.WithExpression(newExpression);
-
-                            BoundExpression boundExpression = BindMethodGroup(node.Expression, invoked: true, indexed: false, diagnostics: diagnostics);
-                            result = bindArgumentsAndInvocation(node, boundExpression, analyzedArguments, diagnostics);
-                            break;
-                        }
-                    }
-                }
+                result = bindArgumentsAndInvocation(node, boundExpression, analyzedArguments, diagnostics, out bool hasNoSuchMethodOrExtensionError);
             }
 
             analyzedArguments.Free();
             return result;
 
-            BoundExpression bindArgumentsAndInvocation(InvocationExpressionSyntax node, BoundExpression boundExpression, AnalyzedArguments analyzedArguments, BindingDiagnosticBag diagnostics)
+            BoundExpression bindArgumentsAndInvocation(InvocationExpressionSyntax node, BoundExpression boundExpression, AnalyzedArguments analyzedArguments, BindingDiagnosticBag diagnostics, out bool noSuchExtension)
             {
                 boundExpression = CheckValue(boundExpression, BindValueKind.RValueOrMethodGroup, diagnostics);
                 string name = boundExpression.Kind == BoundKind.MethodGroup ? GetName(node.Expression) : null;
                 BindArgumentsAndNames(node.ArgumentList, diagnostics, analyzedArguments, allowArglist: true);
-                return BindInvocationExpression(node, node.Expression, name, boundExpression, analyzedArguments, diagnostics, acceptOnlyMethods: false);
+                return BindInvocationExpression(node, node.Expression, name, boundExpression, analyzedArguments, diagnostics, acceptOnlyMethods: false, noSuchExtension: out noSuchExtension);
             }
 
             static bool receiverIsInvocation(InvocationExpressionSyntax node, out InvocationExpressionSyntax nested)

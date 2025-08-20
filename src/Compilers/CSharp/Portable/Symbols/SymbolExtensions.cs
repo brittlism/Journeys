@@ -8,7 +8,6 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Microsoft.CodeAnalysis.PooledObjects;
 using Roslyn.Utilities;
 
 using static System.Linq.ImmutableArrayExtensions;
@@ -813,26 +812,6 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
             return parameter.ContainingSymbol is SourceExtensionImplementationMethodSymbol implementationMethod
                 && !implementationMethod.UnderlyingMethod.IsStatic
                 && parameter.Ordinal == 0;
-        }
-
-        public static ImmutableArray<(Symbol, NamedTypeSymbol)> GetMixinMembers(this NamedTypeSymbol typeSymbol, ImmutableArray<Symbol>? values = null)
-        {
-            var builder = ArrayBuilder<(Symbol, NamedTypeSymbol)>.GetInstance();
-
-            foreach (var member in values ?? typeSymbol.GetMembers())
-            {
-                NamedTypeSymbol type;
-                if (member.IsStatic)
-                    continue;
-                else if (member is FieldSymbol { IsMixin: true, Type: NamedTypeSymbol { Kind: not SymbolKind.ErrorType } fieldType })
-                    type = fieldType;
-                else if (member is PropertySymbol { IsMixin: true, Type: NamedTypeSymbol { Kind: not SymbolKind.ErrorType } propertyType })
-                    type = propertyType;
-                else continue;
-                builder.Add((member, type));
-            }
-
-            return builder.ToImmutableAndFree();
         }
     }
 }
