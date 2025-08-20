@@ -6038,7 +6038,6 @@ Microsoft.CodeAnalysis.CSharp.SyntaxKind.MinusEqualsToken
 Microsoft.CodeAnalysis.CSharp.SyntaxKind.MinusGreaterThanToken
 Microsoft.CodeAnalysis.CSharp.SyntaxKind.MinusMinusToken
 Microsoft.CodeAnalysis.CSharp.SyntaxKind.MinusToken
-Microsoft.CodeAnalysis.CSharp.SyntaxKind.MixinKeyword
 Microsoft.CodeAnalysis.CSharp.SyntaxKind.ModuleKeyword
 Microsoft.CodeAnalysis.CSharp.SyntaxKind.ModuloAssignmentExpression
 Microsoft.CodeAnalysis.CSharp.SyntaxKind.ModuloExpression
