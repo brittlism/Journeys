@@ -854,7 +854,6 @@ Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor.VisitWhenClause(Microsoft.Code
 Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor.VisitWhereClause(Microsoft.CodeAnalysis.CSharp.Syntax.WhereClauseSyntax)
 Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor.VisitWhileStatement(Microsoft.CodeAnalysis.CSharp.Syntax.WhileStatementSyntax)
 Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor.VisitWithExpression(Microsoft.CodeAnalysis.CSharp.Syntax.WithExpressionSyntax)
-Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor.VisitWithStatement(Microsoft.CodeAnalysis.CSharp.Syntax.WithStatementSyntax)
 Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor.VisitXmlCDataSection(Microsoft.CodeAnalysis.CSharp.Syntax.XmlCDataSectionSyntax)
 Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor.VisitXmlComment(Microsoft.CodeAnalysis.CSharp.Syntax.XmlCommentSyntax)
 Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor.VisitXmlCrefAttribute(Microsoft.CodeAnalysis.CSharp.Syntax.XmlCrefAttributeSyntax)
@@ -1106,7 +1105,6 @@ Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor`1.VisitWhenClause(Microsoft.Co
 Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor`1.VisitWhereClause(Microsoft.CodeAnalysis.CSharp.Syntax.WhereClauseSyntax)
 Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor`1.VisitWhileStatement(Microsoft.CodeAnalysis.CSharp.Syntax.WhileStatementSyntax)
 Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor`1.VisitWithExpression(Microsoft.CodeAnalysis.CSharp.Syntax.WithExpressionSyntax)
-Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor`1.VisitWithStatement(Microsoft.CodeAnalysis.CSharp.Syntax.WithStatementSyntax)
 Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor`1.VisitXmlCDataSection(Microsoft.CodeAnalysis.CSharp.Syntax.XmlCDataSectionSyntax)
 Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor`1.VisitXmlComment(Microsoft.CodeAnalysis.CSharp.Syntax.XmlCommentSyntax)
 Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor`1.VisitXmlCrefAttribute(Microsoft.CodeAnalysis.CSharp.Syntax.XmlCrefAttributeSyntax)
@@ -4579,23 +4577,6 @@ Microsoft.CodeAnalysis.CSharp.Syntax.WithExpressionSyntax.WithWithKeyword(Micros
 Microsoft.CodeAnalysis.CSharp.Syntax.WithExpressionSyntax.get_Expression
 Microsoft.CodeAnalysis.CSharp.Syntax.WithExpressionSyntax.get_Initializer
 Microsoft.CodeAnalysis.CSharp.Syntax.WithExpressionSyntax.get_WithKeyword
-Microsoft.CodeAnalysis.CSharp.Syntax.WithStatementSyntax
-Microsoft.CodeAnalysis.CSharp.Syntax.WithStatementSyntax.Accept(Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor)
-Microsoft.CodeAnalysis.CSharp.Syntax.WithStatementSyntax.Accept``1(Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor{``0})
-Microsoft.CodeAnalysis.CSharp.Syntax.WithStatementSyntax.AddAttributeLists(Microsoft.CodeAnalysis.CSharp.Syntax.AttributeListSyntax[])
-Microsoft.CodeAnalysis.CSharp.Syntax.WithStatementSyntax.Update(Microsoft.CodeAnalysis.SyntaxList{Microsoft.CodeAnalysis.CSharp.Syntax.AttributeListSyntax},Microsoft.CodeAnalysis.SyntaxToken,Microsoft.CodeAnalysis.SyntaxToken,Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax,Microsoft.CodeAnalysis.SyntaxToken,Microsoft.CodeAnalysis.CSharp.Syntax.BlockSyntax)
-Microsoft.CodeAnalysis.CSharp.Syntax.WithStatementSyntax.WithAttributeLists(Microsoft.CodeAnalysis.SyntaxList{Microsoft.CodeAnalysis.CSharp.Syntax.AttributeListSyntax})
-Microsoft.CodeAnalysis.CSharp.Syntax.WithStatementSyntax.WithBlock(Microsoft.CodeAnalysis.CSharp.Syntax.BlockSyntax)
-Microsoft.CodeAnalysis.CSharp.Syntax.WithStatementSyntax.WithCloseParenToken(Microsoft.CodeAnalysis.SyntaxToken)
-Microsoft.CodeAnalysis.CSharp.Syntax.WithStatementSyntax.WithOpenParenToken(Microsoft.CodeAnalysis.SyntaxToken)
-Microsoft.CodeAnalysis.CSharp.Syntax.WithStatementSyntax.WithValue(Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax)
-Microsoft.CodeAnalysis.CSharp.Syntax.WithStatementSyntax.WithWithKeyword(Microsoft.CodeAnalysis.SyntaxToken)
-Microsoft.CodeAnalysis.CSharp.Syntax.WithStatementSyntax.get_AttributeLists
-Microsoft.CodeAnalysis.CSharp.Syntax.WithStatementSyntax.get_Block
-Microsoft.CodeAnalysis.CSharp.Syntax.WithStatementSyntax.get_CloseParenToken
-Microsoft.CodeAnalysis.CSharp.Syntax.WithStatementSyntax.get_OpenParenToken
-Microsoft.CodeAnalysis.CSharp.Syntax.WithStatementSyntax.get_Value
-Microsoft.CodeAnalysis.CSharp.Syntax.WithStatementSyntax.get_WithKeyword
 Microsoft.CodeAnalysis.CSharp.Syntax.XmlAttributeSyntax
 Microsoft.CodeAnalysis.CSharp.Syntax.XmlAttributeSyntax.WithEndQuoteToken(Microsoft.CodeAnalysis.SyntaxToken)
 Microsoft.CodeAnalysis.CSharp.Syntax.XmlAttributeSyntax.WithEqualsToken(Microsoft.CodeAnalysis.SyntaxToken)
@@ -5561,7 +5542,6 @@ Microsoft.CodeAnalysis.CSharp.SyntaxFactory.Whitespace(System.String)
 Microsoft.CodeAnalysis.CSharp.SyntaxFactory.Whitespace(System.String,System.Boolean)
 Microsoft.CodeAnalysis.CSharp.SyntaxFactory.WithExpression(Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax,Microsoft.CodeAnalysis.CSharp.Syntax.InitializerExpressionSyntax)
 Microsoft.CodeAnalysis.CSharp.SyntaxFactory.WithExpression(Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax,Microsoft.CodeAnalysis.SyntaxToken,Microsoft.CodeAnalysis.CSharp.Syntax.InitializerExpressionSyntax)
-Microsoft.CodeAnalysis.CSharp.SyntaxFactory.WithStatement(Microsoft.CodeAnalysis.SyntaxList{Microsoft.CodeAnalysis.CSharp.Syntax.AttributeListSyntax},Microsoft.CodeAnalysis.SyntaxToken,Microsoft.CodeAnalysis.SyntaxToken,Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax,Microsoft.CodeAnalysis.SyntaxToken,Microsoft.CodeAnalysis.CSharp.Syntax.BlockSyntax)
 Microsoft.CodeAnalysis.CSharp.SyntaxFactory.XmlCDataSection(Microsoft.CodeAnalysis.SyntaxToken,Microsoft.CodeAnalysis.SyntaxTokenList,Microsoft.CodeAnalysis.SyntaxToken)
 Microsoft.CodeAnalysis.CSharp.SyntaxFactory.XmlCDataSection(Microsoft.CodeAnalysis.SyntaxTokenList)
 Microsoft.CodeAnalysis.CSharp.SyntaxFactory.XmlComment(Microsoft.CodeAnalysis.SyntaxToken,Microsoft.CodeAnalysis.SyntaxTokenList,Microsoft.CodeAnalysis.SyntaxToken)
@@ -6290,7 +6270,6 @@ Microsoft.CodeAnalysis.CSharp.SyntaxKind.WhitespaceTrivia
 Microsoft.CodeAnalysis.CSharp.SyntaxKind.WithExpression
 Microsoft.CodeAnalysis.CSharp.SyntaxKind.WithInitializerExpression
 Microsoft.CodeAnalysis.CSharp.SyntaxKind.WithKeyword
-Microsoft.CodeAnalysis.CSharp.SyntaxKind.WithStatement
 Microsoft.CodeAnalysis.CSharp.SyntaxKind.XmlCDataEndToken
 Microsoft.CodeAnalysis.CSharp.SyntaxKind.XmlCDataSection
 Microsoft.CodeAnalysis.CSharp.SyntaxKind.XmlCDataStartToken

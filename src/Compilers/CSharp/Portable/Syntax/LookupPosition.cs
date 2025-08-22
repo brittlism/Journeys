@@ -364,8 +364,6 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax
                     return ((YieldStatementSyntax)statement).YieldKeyword;
                 case SyntaxKind.LocalFunctionStatement:
                     return statement.GetFirstToken();
-                case SyntaxKind.WithStatement:
-                    return ((WithStatementSyntax)statement).WithKeyword;
                 default:
                     throw ExceptionUtilities.UnexpectedValue(statement.Kind());
             }
@@ -447,8 +445,6 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax
                     if (localFunctionStmt.SemicolonToken != default(SyntaxToken))
                         return localFunctionStmt.SemicolonToken;
                     return localFunctionStmt.ParameterList.GetLastToken();
-                case SyntaxKind.WithStatement:
-                    return ((WithStatementSyntax)statement).Block.CloseBraceToken;
                 default:
                     throw ExceptionUtilities.UnexpectedValue(statement.Kind());
             }

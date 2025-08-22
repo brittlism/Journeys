@@ -116,7 +116,6 @@ namespace Microsoft.CodeAnalysis.CSharp
                         }
                         break;
 
-                    case SyntaxKind.WithStatement:
                     case SyntaxKind.UsingStatement:
                     case SyntaxKind.FixedStatement:
                     case SyntaxKind.ForStatement:
