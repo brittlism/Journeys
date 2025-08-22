@@ -12750,6 +12750,127 @@ internal sealed partial class ForEachVariableStatementSyntax : CommonForEachStat
         => new ForEachVariableStatementSyntax(this.Kind, this.attributeLists, this.awaitKeyword, this.forEachKeyword, this.openParenToken, this.variable, this.inKeyword, this.expression, this.closeParenToken, this.statement, GetDiagnostics(), annotations);
 }
 
+internal sealed partial class WithStatementSyntax : StatementSyntax
+{
+    internal readonly GreenNode? attributeLists;
+    internal readonly SyntaxToken withKeyword;
+    internal readonly SyntaxToken openParenToken;
+    internal readonly ExpressionSyntax value;
+    internal readonly SyntaxToken closeParenToken;
+    internal readonly BlockSyntax block;
+
+    internal WithStatementSyntax(SyntaxKind kind, GreenNode? attributeLists, SyntaxToken withKeyword, SyntaxToken openParenToken, ExpressionSyntax value, SyntaxToken closeParenToken, BlockSyntax block, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+      : base(kind, diagnostics, annotations)
+    {
+        this.SlotCount = 8;
+        if (attributeLists != null)
+        {
+            this.AdjustFlagsAndWidth(attributeLists);
+            this.attributeLists = attributeLists;
+        }
+        this.AdjustFlagsAndWidth(withKeyword);
+        this.withKeyword = withKeyword;
+        this.AdjustFlagsAndWidth(openParenToken);
+        this.openParenToken = openParenToken;
+        this.AdjustFlagsAndWidth(value);
+        this.value = value;
+        this.AdjustFlagsAndWidth(closeParenToken);
+        this.closeParenToken = closeParenToken;
+        this.AdjustFlagsAndWidth(block);
+        this.block = block;
+    }
+
+    internal WithStatementSyntax(SyntaxKind kind, GreenNode? attributeLists, SyntaxToken withKeyword, SyntaxToken openParenToken, ExpressionSyntax value, SyntaxToken closeParenToken, BlockSyntax block, SyntaxFactoryContext context)
+      : base(kind)
+    {
+        this.SetFactoryContext(context);
+        this.SlotCount = 8;
+        if (attributeLists != null)
+        {
+            this.AdjustFlagsAndWidth(attributeLists);
+            this.attributeLists = attributeLists;
+        }
+        this.AdjustFlagsAndWidth(withKeyword);
+        this.withKeyword = withKeyword;
+        this.AdjustFlagsAndWidth(openParenToken);
+        this.openParenToken = openParenToken;
+        this.AdjustFlagsAndWidth(value);
+        this.value = value;
+        this.AdjustFlagsAndWidth(closeParenToken);
+        this.closeParenToken = closeParenToken;
+        this.AdjustFlagsAndWidth(block);
+        this.block = block;
+    }
+
+    internal WithStatementSyntax(SyntaxKind kind, GreenNode? attributeLists, SyntaxToken withKeyword, SyntaxToken openParenToken, ExpressionSyntax value, SyntaxToken closeParenToken, BlockSyntax block)
+      : base(kind)
+    {
+        this.SlotCount = 8;
+        if (attributeLists != null)
+        {
+            this.AdjustFlagsAndWidth(attributeLists);
+            this.attributeLists = attributeLists;
+        }
+        this.AdjustFlagsAndWidth(withKeyword);
+        this.withKeyword = withKeyword;
+        this.AdjustFlagsAndWidth(openParenToken);
+        this.openParenToken = openParenToken;
+        this.AdjustFlagsAndWidth(value);
+        this.value = value;
+        this.AdjustFlagsAndWidth(closeParenToken);
+        this.closeParenToken = closeParenToken;
+        this.AdjustFlagsAndWidth(block);
+        this.block = block;
+    }
+
+    public override CoreSyntax.SyntaxList<AttributeListSyntax> AttributeLists => new CoreSyntax.SyntaxList<AttributeListSyntax>(this.attributeLists);
+    public SyntaxToken WithKeyword => this.withKeyword;
+    public SyntaxToken OpenParenToken => this.openParenToken;
+    public ExpressionSyntax Value => this.value;
+    public SyntaxToken CloseParenToken => this.closeParenToken;
+    public BlockSyntax Block => this.block;
+
+    internal override GreenNode? GetSlot(int index)
+        => index switch
+        {
+            0 => this.attributeLists,
+            1 => this.withKeyword,
+            2 => this.openParenToken,
+            3 => this.value,
+            4 => this.closeParenToken,
+            5 => this.block,
+            _ => null,
+        };
+
+    internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new CSharp.Syntax.WithStatementSyntax(this, parent, position);
+
+    public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitWithStatement(this);
+    public override TResult Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) => visitor.VisitWithStatement(this);
+
+    public WithStatementSyntax Update(CoreSyntax.SyntaxList<AttributeListSyntax> attributeLists, SyntaxToken withKeyword, SyntaxToken openParenToken, ExpressionSyntax value, SyntaxToken closeParenToken, BlockSyntax block)
+    {
+        if (attributeLists != this.AttributeLists || withKeyword != this.WithKeyword || openParenToken != this.OpenParenToken || value != this.Value || closeParenToken != this.CloseParenToken || block != this.Block)
+        {
+            var newNode = SyntaxFactory.WithStatement(attributeLists, withKeyword, openParenToken, value, closeParenToken, block);
+            var diags = GetDiagnostics();
+            if (diags?.Length > 0)
+                newNode = newNode.WithDiagnosticsGreen(diags);
+            var annotations = GetAnnotations();
+            if (annotations?.Length > 0)
+                newNode = newNode.WithAnnotationsGreen(annotations);
+            return newNode;
+        }
+
+        return this;
+    }
+
+    internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+        => new WithStatementSyntax(this.Kind, this.attributeLists, this.withKeyword, this.openParenToken, this.value, this.closeParenToken, this.block, diagnostics, GetAnnotations());
+
+    internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+        => new WithStatementSyntax(this.Kind, this.attributeLists, this.withKeyword, this.openParenToken, this.value, this.closeParenToken, this.block, GetDiagnostics(), annotations);
+}
+
 internal sealed partial class UsingStatementSyntax : StatementSyntax
 {
     internal readonly GreenNode? attributeLists;
@@ -27074,6 +27195,7 @@ internal partial class CSharpSyntaxVisitor<TResult>
     public virtual TResult VisitForStatement(ForStatementSyntax node) => this.DefaultVisit(node);
     public virtual TResult VisitForEachStatement(ForEachStatementSyntax node) => this.DefaultVisit(node);
     public virtual TResult VisitForEachVariableStatement(ForEachVariableStatementSyntax node) => this.DefaultVisit(node);
+    public virtual TResult VisitWithStatement(WithStatementSyntax node) => this.DefaultVisit(node);
     public virtual TResult VisitUsingStatement(UsingStatementSyntax node) => this.DefaultVisit(node);
     public virtual TResult VisitFixedStatement(FixedStatementSyntax node) => this.DefaultVisit(node);
     public virtual TResult VisitCheckedStatement(CheckedStatementSyntax node) => this.DefaultVisit(node);
@@ -27325,6 +27447,7 @@ internal partial class CSharpSyntaxVisitor
     public virtual void VisitForStatement(ForStatementSyntax node) => this.DefaultVisit(node);
     public virtual void VisitForEachStatement(ForEachStatementSyntax node) => this.DefaultVisit(node);
     public virtual void VisitForEachVariableStatement(ForEachVariableStatementSyntax node) => this.DefaultVisit(node);
+    public virtual void VisitWithStatement(WithStatementSyntax node) => this.DefaultVisit(node);
     public virtual void VisitUsingStatement(UsingStatementSyntax node) => this.DefaultVisit(node);
     public virtual void VisitFixedStatement(FixedStatementSyntax node) => this.DefaultVisit(node);
     public virtual void VisitCheckedStatement(CheckedStatementSyntax node) => this.DefaultVisit(node);
@@ -31034,6 +31157,21 @@ internal partial class ContextAwareSyntax
 #endif
 
         return new ForEachVariableStatementSyntax(SyntaxKind.ForEachVariableStatement, attributeLists.Node, awaitKeyword, forEachKeyword, openParenToken, variable, inKeyword, expression, closeParenToken, statement, this.context);
+    }
+
+    public WithStatementSyntax WithStatement(CoreSyntax.SyntaxList<AttributeListSyntax> attributeLists, SyntaxToken withKeyword, SyntaxToken openParenToken, ExpressionSyntax value, SyntaxToken closeParenToken, BlockSyntax block)
+    {
+#if DEBUG
+        if (withKeyword == null) throw new ArgumentNullException(nameof(withKeyword));
+        if (withKeyword.Kind != SyntaxKind.WithKeyword) throw new ArgumentException(nameof(withKeyword));
+        if (openParenToken == null) throw new ArgumentNullException(nameof(openParenToken));
+        if (openParenToken.Kind != SyntaxKind.OpenParenToken) throw new ArgumentException(nameof(openParenToken));
+        if (closeParenToken == null) throw new ArgumentNullException(nameof(closeParenToken));
+        if (closeParenToken.Kind != SyntaxKind.CloseParenToken) throw new ArgumentException(nameof(closeParenToken));
+        if (block == null) throw new ArgumentNullException(nameof(block));
+#endif
+
+        return new WithStatementSyntax(SyntaxKind.WithStatement, attributeLists.Node, withKeyword, openParenToken, value, closeParenToken, block, this.context);
     }
 
     public UsingStatementSyntax UsingStatement(CoreSyntax.SyntaxList<AttributeListSyntax> attributeLists, SyntaxToken? awaitKeyword, SyntaxToken usingKeyword, SyntaxToken openParenToken, VariableDeclarationSyntax? declaration, ExpressionSyntax? expression, SyntaxToken closeParenToken, StatementSyntax statement)
@@ -36401,6 +36539,21 @@ internal static partial class SyntaxFactory
 #endif
 
         return new ForEachVariableStatementSyntax(SyntaxKind.ForEachVariableStatement, attributeLists.Node, awaitKeyword, forEachKeyword, openParenToken, variable, inKeyword, expression, closeParenToken, statement);
+    }
+
+    public static WithStatementSyntax WithStatement(CoreSyntax.SyntaxList<AttributeListSyntax> attributeLists, SyntaxToken withKeyword, SyntaxToken openParenToken, ExpressionSyntax value, SyntaxToken closeParenToken, BlockSyntax block)
+    {
+#if DEBUG
+        if (withKeyword == null) throw new ArgumentNullException(nameof(withKeyword));
+        if (withKeyword.Kind != SyntaxKind.WithKeyword) throw new ArgumentException(nameof(withKeyword));
+        if (openParenToken == null) throw new ArgumentNullException(nameof(openParenToken));
+        if (openParenToken.Kind != SyntaxKind.OpenParenToken) throw new ArgumentException(nameof(openParenToken));
+        if (closeParenToken == null) throw new ArgumentNullException(nameof(closeParenToken));
+        if (closeParenToken.Kind != SyntaxKind.CloseParenToken) throw new ArgumentException(nameof(closeParenToken));
+        if (block == null) throw new ArgumentNullException(nameof(block));
+#endif
+
+        return new WithStatementSyntax(SyntaxKind.WithStatement, attributeLists.Node, withKeyword, openParenToken, value, closeParenToken, block);
     }
 
     public static UsingStatementSyntax UsingStatement(CoreSyntax.SyntaxList<AttributeListSyntax> attributeLists, SyntaxToken? awaitKeyword, SyntaxToken usingKeyword, SyntaxToken openParenToken, VariableDeclarationSyntax? declaration, ExpressionSyntax? expression, SyntaxToken closeParenToken, StatementSyntax statement)

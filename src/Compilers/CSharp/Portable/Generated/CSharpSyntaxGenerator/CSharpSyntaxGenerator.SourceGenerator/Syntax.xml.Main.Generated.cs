@@ -408,6 +408,9 @@ public partial class CSharpSyntaxVisitor<TResult>
     /// <summary>Called when the visitor visits a ForEachVariableStatementSyntax node.</summary>
     public virtual TResult? VisitForEachVariableStatement(ForEachVariableStatementSyntax node) => this.DefaultVisit(node);
 
+    /// <summary>Called when the visitor visits a WithStatementSyntax node.</summary>
+    public virtual TResult? VisitWithStatement(WithStatementSyntax node) => this.DefaultVisit(node);
+
     /// <summary>Called when the visitor visits a UsingStatementSyntax node.</summary>
     public virtual TResult? VisitUsingStatement(UsingStatementSyntax node) => this.DefaultVisit(node);
 
@@ -1151,6 +1154,9 @@ public partial class CSharpSyntaxVisitor
 
     /// <summary>Called when the visitor visits a ForEachVariableStatementSyntax node.</summary>
     public virtual void VisitForEachVariableStatement(ForEachVariableStatementSyntax node) => this.DefaultVisit(node);
+
+    /// <summary>Called when the visitor visits a WithStatementSyntax node.</summary>
+    public virtual void VisitWithStatement(WithStatementSyntax node) => this.DefaultVisit(node);
 
     /// <summary>Called when the visitor visits a UsingStatementSyntax node.</summary>
     public virtual void VisitUsingStatement(UsingStatementSyntax node) => this.DefaultVisit(node);
@@ -4404,6 +4410,18 @@ public static partial class SyntaxFactory
     /// <summary>Creates a new ForEachVariableStatementSyntax instance.</summary>
     public static ForEachVariableStatementSyntax ForEachVariableStatement(ExpressionSyntax variable, ExpressionSyntax expression, StatementSyntax statement)
         => SyntaxFactory.ForEachVariableStatement(default, default, SyntaxFactory.Token(SyntaxKind.ForEachKeyword), SyntaxFactory.Token(SyntaxKind.OpenParenToken), variable, SyntaxFactory.Token(SyntaxKind.InKeyword), expression, SyntaxFactory.Token(SyntaxKind.CloseParenToken), statement);
+
+    /// <summary>Creates a new WithStatementSyntax instance.</summary>
+    public static WithStatementSyntax WithStatement(SyntaxList<AttributeListSyntax> attributeLists, SyntaxToken withKeyword, SyntaxToken openParenToken, ExpressionSyntax value, SyntaxToken closeParenToken, BlockSyntax block)
+    {
+        if (withKeyword.Kind() != SyntaxKind.WithKeyword) throw new ArgumentException(nameof(withKeyword));
+        if (openParenToken.Kind() != SyntaxKind.OpenParenToken) throw new ArgumentException(nameof(openParenToken));
+        if (value == null) throw new ArgumentNullException(nameof(value));
+        if (closeParenToken.Kind() != SyntaxKind.CloseParenToken) throw new ArgumentException(nameof(closeParenToken));
+        if (block == null) throw new ArgumentNullException(nameof(block));
+        return (WithStatementSyntax)Syntax.InternalSyntax.SyntaxFactory.WithStatement(attributeLists.Node.ToGreenList<Syntax.InternalSyntax.AttributeListSyntax>(), (Syntax.InternalSyntax.SyntaxToken)withKeyword.Node!, (Syntax.InternalSyntax.SyntaxToken)openParenToken.Node!, (Syntax.InternalSyntax.ExpressionSyntax)value.Green, (Syntax.InternalSyntax.SyntaxToken)closeParenToken.Node!, (Syntax.InternalSyntax.BlockSyntax)block.Green).CreateRed();
+    }
+
 
     /// <summary>Creates a new UsingStatementSyntax instance.</summary>
     public static UsingStatementSyntax UsingStatement(SyntaxList<AttributeListSyntax> attributeLists, SyntaxToken awaitKeyword, SyntaxToken usingKeyword, SyntaxToken openParenToken, VariableDeclarationSyntax? declaration, ExpressionSyntax? expression, SyntaxToken closeParenToken, StatementSyntax statement)

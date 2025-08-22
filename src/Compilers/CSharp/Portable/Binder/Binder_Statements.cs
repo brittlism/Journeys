@@ -139,6 +139,10 @@ namespace Microsoft.CodeAnalysis.CSharp
                 case SyntaxKind.LockStatement:
                     result = BindLockStatement((LockStatementSyntax)node, diagnostics);
                     break;
+
+                case SyntaxKind.WithStatement:
+                    result = BindBlock(((WithStatementSyntax)node).Block, diagnostics);
+                    break;
                 default:
                     // NOTE: We could probably throw an exception here, but it's conceivable
                     // that a non-parser syntax tree could reach this point with an unexpected

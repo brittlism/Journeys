@@ -8120,6 +8120,8 @@ done:
                         if (result != null)
                             return result;
                         break;
+                    case SyntaxKind.WithKeyword:
+                        return ParseStatementStartingWithUsing(attributes);
                     case SyntaxKind.UsingKeyword:
                         return ParseStatementStartingWithUsing(attributes);
                     case SyntaxKind.WhileKeyword:
@@ -9976,6 +9978,22 @@ done:
                 attributes,
                 this.EatToken(SyntaxKind.UnsafeKeyword),
                 this.ParsePossiblyAttributedBlock());
+        }
+
+        private WithStatementSyntax ParseWithStatement(SyntaxList<AttributeListSyntax> attributes)
+        {
+            var withKeyword = this.EatToken(SyntaxKind.WithKeyword);
+            var openParen = this.EatToken(SyntaxKind.OpenParenToken);
+
+            ExpressionSyntax valueExpression = this.ParseExpression();
+
+            return _syntaxFactory.WithStatement(
+                attributes,
+                withKeyword,
+                openParen,
+                valueExpression,
+                this.EatToken(SyntaxKind.CloseParenToken),
+                this.ParseBlock(default));
         }
 
         private UsingStatementSyntax ParseUsingStatement(SyntaxList<AttributeListSyntax> attributes, SyntaxToken awaitTokenOpt = null)

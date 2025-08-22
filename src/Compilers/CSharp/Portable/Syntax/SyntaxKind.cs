@@ -326,6 +326,8 @@ namespace Microsoft.CodeAnalysis.CSharp
         ExplicitKeyword = 8383,
         /// <summary>Represents <see langword="implicit"/>.</summary>
         ImplicitKeyword = 8384,
+        /// <summary>Represents <see langword="with"/>.</summary>
+        WithKeyword = 8385,
 
         // contextual keywords
         /// <summary>Represents <see langword="yield"/>.</summary>
@@ -403,8 +405,6 @@ namespace Microsoft.CodeAnalysis.CSharp
 
         // Don't use 8441. It corresponds to a deleted kind (DataKeyword) that was previously shipped.
 
-        /// <summary>Represents <see langword="with"/>.</summary>
-        WithKeyword = 8442,
         /// <summary>Represents <see langword="init"/>.</summary>
         InitKeyword = 8443,
         /// <summary>Represents <see langword="record"/>.</summary>
@@ -755,6 +755,7 @@ namespace Microsoft.CodeAnalysis.CSharp
         DoStatement = 8810,
         ForStatement = 8811,
         ForEachStatement = 8812,
+        WithStatement = 9081,
         UsingStatement = 8813,
         FixedStatement = 8814,
 

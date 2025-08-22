@@ -10,7 +10,7 @@ namespace Microsoft.CodeAnalysis.CSharp
 {
     public static partial class SyntaxFacts
     {
-        private const SyntaxKind LastKeyword = SyntaxKind.ImplicitKeyword;
+        private const SyntaxKind LastKeyword = SyntaxKind.WithKeyword;
 
         public static bool IsKeywordKind(SyntaxKind kind)
         {
@@ -1288,7 +1288,6 @@ namespace Microsoft.CodeAnalysis.CSharp
                 case SyntaxKind.OrKeyword:
                 case SyntaxKind.AndKeyword:
                 case SyntaxKind.NotKeyword:
-                case SyntaxKind.WithKeyword:
                 case SyntaxKind.InitKeyword:
                 case SyntaxKind.RecordKeyword:
                 case SyntaxKind.ManagedKeyword:

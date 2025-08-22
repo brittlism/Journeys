@@ -400,6 +400,8 @@ namespace Microsoft.CodeAnalysis.CSharp
                 case SyntaxKind.UsingStatement:
                 case SyntaxKind.TryStatement:
 
+                case SyntaxKind.WithStatement:
+
                 // ctor parameter captured by a lambda in a ctor initializer
                 case SyntaxKind.ConstructorDeclaration:
                     return true;
